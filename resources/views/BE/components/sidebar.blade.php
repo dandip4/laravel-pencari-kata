@@ -11,11 +11,11 @@
         <li class="nav-item  {{ Request::is('/*') ? 'active' : '' }}">
             <a href="{{ route('/') }}" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
         </li>
-        <li class="menu-header">Input Kata</li>
+        <li class="menu-header">Input Relasi</li>
         <li class="nav-item   {{ Request::is('kata*') ? 'active' : '' }}">
-            <a href="{{ route('kata.index') }}" class="nav-link"><i class="fa-solid fa-file-pen"></i><span>Kata</span></a>
+            <a href="{{ route('kata.index') }}" class="nav-link"><i class="fa-solid fa-file-pen"></i><span>Relasi Kata</span></a>
         </li>
-        <li class="menu-header">Kata</li>
+        <li class="menu-header">Input Kata</li>
         <li class="nav-item   {{ Request::is('kategori*') ? 'active' : '' }}">
             <a href="{{ route('kategori.view') }}" class="nav-link"><i
                     class="fas fa-list"></i><span>Kata</span></a>

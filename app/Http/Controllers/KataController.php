@@ -87,7 +87,12 @@ class KataController extends Controller
      */
     public function index()
     {
-        $kata = Kata::with('kelasKata', 'sinonims', 'antonims', 'imbuhans')->get();
+        $kata = Kata::with('kelasKata', 'sinonims', 'antonims', 'imbuhans')
+        ->whereHas('kelasKata')
+        ->whereHas('sinonims')
+        ->whereHas('antonims')
+        ->whereHas('imbuhans')
+        ->get();
         return view('kata.index', compact('kata'));
     }
 
