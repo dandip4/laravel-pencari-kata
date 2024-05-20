@@ -17,7 +17,8 @@ class KataController extends Controller
     {
 
         $listdata = Kata::all();
-        return view('BE.kategori', compact('listdata'));
+        $kelasKataList = KelasKata::all();
+        return view('BE.kategori', compact('listdata', 'kelasKataList'));
     }
 
     public function simpanKategori(Request $request)
@@ -47,6 +48,40 @@ class KataController extends Controller
         notify()->info('Data berhasil dihapus', 'Sukses');
         return redirect()->route('kategori.view')->with('pesan', 'Delete data berhasil');
     }
+
+    public function viewKelas()
+    {
+
+        $listdata = KelasKata::all();
+        return view('BE.kelas', compact('listdata'));
+    }
+
+    public function simpanKelas(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required',
+        ]);
+        if (!$request->id) {
+            $data = new KelasKata();
+        } else {
+            $data = KelasKata::findOrFail($request->id);
+        }
+        $data->nama = $request->nama;
+        $data->save();
+        drakify('success');
+        return redirect()->route('kelas.view');
+    }
+
+    public function deleteKelas($id)
+    {
+        $data = KelasKata::find($id);
+        if ($data) {
+            $data->delete();
+        }
+        notify()->info('Data berhasil dihapus', 'Sukses');
+        return redirect()->route('kelas.view')->with('pesan', 'Delete data berhasil');
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -65,7 +100,8 @@ class KataController extends Controller
 
     public function store(Request $request)
     {
-        $kata = Kata::create($request->all());
+        // Temukan kata yang ingin diupdate relasinya
+        $kata = Kata::findOrFail($request->kata_id);
 
         // Simpan sinonim
         if ($request->has('sinonim')) {
@@ -80,16 +116,11 @@ class KataController extends Controller
         // Simpan imbuhan
         if ($request->has('imbuhan')) {
             foreach ($request->imbuhan as $imbuhan) {
-                $kata->imbuhans()->create(['imbuhan' => $imbuhan['imbuhan']]);
+                $kata->imbuhans()->create(['imbuhan' => $imbuhan]);
             }
         }
 
         return redirect()->route('kata.index');
-    }
-
-    public function show(Kata $kata)
-    {
-        return view('kata.show', compact('kata'));
     }
 
     public function edit(Kata $kata)
@@ -101,19 +132,21 @@ class KataController extends Controller
 
     public function update(Request $request, Kata $kata)
     {
-        $kata->update($request->all());
-
         // Update sinonim
-        $kata->sinonims()->sync($request->sinonim);
+        if ($request->has('sinonim')) {
+            $kata->sinonims()->sync($request->sinonim);
+        }
 
         // Update antonim
-        $kata->antonims()->sync($request->antonim);
+        if ($request->has('antonim')) {
+            $kata->antonims()->sync($request->antonim);
+        }
 
         // Update imbuhan
         $kata->imbuhans()->delete();
         if ($request->has('imbuhan')) {
             foreach ($request->imbuhan as $imbuhan) {
-                $kata->imbuhans()->create(['imbuhan' => $imbuhan['imbuhan']]);
+                $kata->imbuhans()->create(['imbuhan' => $imbuhan]);
             }
         }
 
@@ -122,46 +155,54 @@ class KataController extends Controller
 
     public function destroy(Kata $kata)
     {
-        $kata->delete();
+        // Hanya menghapus relasi, bukan data kata itu sendiri
+        $kata->sinonims()->detach();
+        $kata->antonims()->detach();
+        $kata->imbuhans()->delete();
         return redirect()->route('kata.index');
     }
 
     // Fungsi pencarian
-    public function search(Request $request)
-{
-    $searchTerm = $request->input('q');
-    $searchType = $request->input('search_type'); // Ambil jenis pencarian yang dipilih oleh pengguna
-
-    // Mulai dengan mencari semua kata
-    $query = Kata::query();
-
-    // Filter hasil berdasarkan jenis pencarian yang dipilih
-    switch ($searchType) {
-        case 'sinonim':
-            $query->whereHas('sinonims', function ($query) use ($searchTerm) {
-                $query->where('kata', 'LIKE', '%' . $searchTerm . '%');
-            });
-            break;
-        case 'antonim':
-            $query->whereHas('antonims', function ($query) use ($searchTerm) {
-                $query->where('kata', 'LIKE', '%' . $searchTerm . '%');
-            });
-            break;
-        case 'imbuhan':
-            $query->whereHas('imbuhans', function ($query) use ($searchTerm) {
-                $query->where('imbuhan', 'LIKE', '%' . $searchTerm . '%');
-            });
-            break;
-        // Jika jenis pencarian tidak dipilih atau "Semua", lanjutkan dengan pencarian normal
-        default:
-            $query->where('kata', 'LIKE', '%' . $searchTerm . '%');
+    public function search()
+    {
+        $kataList = Kata::all();
+        return view('search', compact('kataList'));
     }
+    public function searchResults(Request $request)
+    {
+        $kataId = $request->input('kata_id');
+        $option = $request->input('option');
 
-    // Ambil hasil pencarian
-    $results = $query->with('kelasKata', 'sinonims', 'antonims', 'imbuhans')->get();
+        $kata = Kata::with(['kelasKata', 'sinonims', 'antonims', 'imbuhans'])->findOrFail($kataId);
+        $result = [];
 
-    // Kirim hasil pencarian dan jenis pencarian ke view
-    return view('results', compact('results', 'searchType'));
-}
+        switch ($option) {
+            case '2':
+                $result = $kata->sinonims;
+                break;
+            case '3':
+                $result = $kata->antonims;
+                break;
+            case '4':
+                $result = $kata->imbuhans;
+                break;
+            default:
+                $result = [
+                    'sinonims' => $kata->sinonims,
+                    'antonims' => $kata->antonims,
+                    'imbuhans' => $kata->imbuhans,
+                ];
+                break;
+        }
 
+        return response()->json($result);
+    }
+    public function getKelasKata($id)
+    {
+        $kata = Kata::findOrFail($id);
+
+        $kelasKata = $kata->kelasKata->nama;
+
+        return response()->json(['kelas_kata' => $kelasKata]);
+    }
 }

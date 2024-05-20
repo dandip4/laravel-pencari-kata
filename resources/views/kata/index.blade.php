@@ -46,27 +46,10 @@
                                                     <td class="text-center">{{ $loop->iteration }}</td>
                                                     <td>{{ $item->kata }}</td>
                                                     <td>{{ $item->kelasKata->nama }}</td>
-                                                    <td>
-                                                        @foreach ($item->sinonims as $sinonim)
-                                                            {{ $sinonim->kata }}@if (!$loop->last)
-                                                                ,
-                                                            @endif
-                                                        @endforeach
-                                                    </td>
-                                                    <td>
-                                                        @foreach ($item->antonims as $antonim)
-                                                            {{ $antonim->kata }}@if (!$loop->last)
-                                                                ,
-                                                            @endif
-                                                        @endforeach
-                                                    </td>
-                                                    <td>
-                                                        @foreach ($item->imbuhans as $imbuhan)
-                                                            {{ $imbuhan->imbuhan }} ({{ $imbuhan->tipe }})@if (!$loop->last)
-                                                                ,
-                                                            @endif
-                                                        @endforeach
-                                                    </td>
+                                                    <td>{{ implode(', ', $item->sinonims->pluck('kata')->toArray()) }}</td>
+                                                    <td>{{ implode(', ', $item->antonims->pluck('kata')->toArray()) }}</td>
+                                                    <td>{{ implode(', ', $item->imbuhans->pluck('imbuhan')->toArray()) }}</td>
+
                                                     <td>
                                                         <a href="{{ route('kata.edit', $item) }}"
                                                             class="btn btn-success btn-sm waves-effect waves-light">

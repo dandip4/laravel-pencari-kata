@@ -1,15 +1,15 @@
 @extends('BE.layouts.app')
 
-@section('title', 'Kata')
+@section('title', 'Kelas Kata')
 
 @section('main')
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Kata</h1>
+                <h1>Kelas Kata</h1>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item">Kata</div>
+                    <div class="breadcrumb-item">Kelas Kata</div>
                 </div>
             </div>
             <div class="section-body">
@@ -40,7 +40,7 @@
                                             @foreach ($listdata as $item)
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
-                                                    <td>{{ $item->kata }}</td>
+                                                    <td>{{ $item->nama }}</td>
                                                     <td>
                                                         <a href="javascript:;" onclick="editData({{ $item->toJson() }})"
                                                             class="btn btn-info btn-sm waves-effect waves-light">
@@ -67,10 +67,10 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Form Tambah Kata</h5>
+                    <h5 class="modal-title" id="modalTitle">Form Tambah Kelas Kata</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="needs-validation" validate method="post" action="{{ route('kategori.simpan') }}"
+                <form class="needs-validation" validate method="post" action="{{ route('kelas.simpan') }}"
                     id="FormCrud">
                     @csrf
                     <input type="hidden" name="id" id="inputID">
@@ -78,21 +78,9 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label class="form-label" for="inputVal">Kata</label>
-                                    <input type="text" class="form-control" id="inputVal" placeholder="Kata" name="kata" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="mb-3">
-                                    <label class="form-label" for="inputIDD">Kelas Kata</label>
-                                    <select class="form-control select2" id="inputIDD" name="kelas_kata_id" required>
-                                        <option value=""></option>
-                                        @foreach($kelasKataList as $kelasKata)
-                                        <option value="{{ $kelasKata->id }}">{{ $kelasKata->nama }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="form-label" for="inputVal">Kelas kata</label>
+                                    <input type="text" class="form-control" id="inputVal" placeholder=""
+                                        name="nama" required>
                                 </div>
                             </div>
                         </div>
@@ -110,7 +98,6 @@
             var FormCrud = document.getElementById("FormCrud");
 
             var inputID = document.getElementById('inputID');
-            var inputIDD = document.getElementById('inputIDD');
             var inputVal = document.getElementById('inputVal');
 
             function addData() {
@@ -123,8 +110,7 @@
                 FormCrud.reset();
                 modalTitle.innerHTML = "Ubah Data";
                 inputID.value = item.id;
-                inputIDD.value = item.kelas_kata_id;
-                inputVal.value = item.kata;
+                inputVal.value = item.nama;
                 $('.modalFormCrud').modal('show');
             }
 
@@ -140,7 +126,7 @@
                     cancelButtonText: 'Tidak'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location = "{{ route('kategori.delete', ['id' => ':id']) }}".replace(':id',
+                        window.location = "{{ route('kelas.delete', ['id' => ':id']) }}".replace(':id',
                             id);
                     }
                 })

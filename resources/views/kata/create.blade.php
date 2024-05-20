@@ -28,43 +28,38 @@
                                     @csrf
 
                                     <div class="form-group">
-                                        <label for="kata">Kata</label>
-                                        <select class="form-control select2" id="kata" name="kata" required>
-                                            @foreach($kataList as $kata)
-                                                <option value="{{ $kata->id }}">{{ $kata->kata }}</option>
-                                            @endforeach
-                                        </select>                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="kelas_kata_id">Kelas Kata</label>
-                                        <select class="form-control select2" id="kelas_kata_id" name="kelas_kata_id" required>
-                                            @foreach($kelasKata as $kk)
-                                                <option value="{{ $kk->id }}">{{ $kk->nama }}</option>
+                                        <label for="kata_id">Pilih Kata</label>
+                                        <select name="kata_id" id="kata_id" class="form-control select2" required>
+                                            @foreach($kataList as $item)
+                                                <option value="{{ $item->id }}">{{ $item->kata }}</option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="sinonim">Sinonim</label>
-                                        <select multiple class="form-control select2" id="sinonim" name="sinonim[]">
-                                            @foreach($kataList as $kata)
-                                                <option value="{{ $kata->id }}">{{ $kata->kata }}</option>
+                                        <select name="sinonim[]" id="sinonim" class="form-control select2" multiple>
+                                            @foreach($kataList as $item)
+                                                <option value="{{ $item->id }}">{{ $item->kata }}</option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="antonim">Antonim</label>
-                                        <select multiple class="form-control select2" id="antonim" name="antonim[]">
-                                            @foreach($kataList as $kata)
-                                                <option value="{{ $kata->id }}">{{ $kata->kata }}</option>
+                                        <select name="antonim[]" id="antonim" class="form-control select2" multiple>
+                                            @foreach($kataList as $item)
+                                                <option value="{{ $item->id }}">{{ $item->kata }}</option>
                                             @endforeach
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="imbuhan">Imbuhan</label>
-                                        <input type="text" class="form-control" id="imbuhan" name="imbuhan[]">
+                                        <div id="imbuhan">
+                                            <input type="text" name="imbuhan[]" class="form-control mb-2">
+                                        </div>
+                                        <button type="button" class="btn btn-secondary" onclick="addImbuhan()">Tambah Imbuhan</button>
                                     </div>
 
                                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -76,4 +71,14 @@
             </div>
         </section>
     </div>
+
+@push('scripts')
+<script>
+    function addImbuhan() {
+        var div = document.createElement('div');
+        div.innerHTML = '<input type="text" name="imbuhan[]" class="form-control mb-2">';
+        document.getElementById('imbuhan').appendChild(div);
+    }
+</script>
+@endpush
 @endsection

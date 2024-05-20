@@ -24,32 +24,16 @@
                                 <h4>Artikel</h4>
                             </div>
                             <div class="card-body">
-                                <form action="{{ route('kata.update', $kata) }}" method="POST">
+                                <form action="{{ route('kata.update', $kata->id) }}" method="POST">
                                     @csrf
                                     @method('PUT')
 
                                     <div class="form-group">
-                                        <label for="kata">Kata</label>
-                                        <input type="text" class="form-control" id="kata" name="kata" value="{{ $kata->kata }}" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="kelas_kata_id">Kelas Kata</label>
-                                        <select class="form-control" id="kelas_kata_id" name="kelas_kata_id" required>
-                                            @foreach($kelasKata as $kk)
-                                                <option value="{{ $kk->id }}" {{ $kata->kelasKata->id == $kk->id ? 'selected' : '' }}>
-                                                    {{ $kk->nama }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
                                         <label for="sinonim">Sinonim</label>
-                                        <select multiple class="form-control" id="sinonim" name="sinonim[]">
-                                            @foreach($kataList as $kata)
-                                                <option value="{{ $kata->id }}" {{ in_array($kata->id, $sinonimIds) ? 'selected' : '' }}>
-                                                    {{ $kata->kata }}
+                                        <select name="sinonim[]" id="sinonim" class="form-control" multiple>
+                                            @foreach($kataList as $item)
+                                                <option value="{{ $item->id }}" {{ in_array($item->id, $kata->sinonims->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                                    {{ $item->kata }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -57,10 +41,10 @@
 
                                     <div class="form-group">
                                         <label for="antonim">Antonim</label>
-                                        <select multiple class="form-control" id="antonim" name="antonim[]">
-                                            @foreach($kataList as $kata)
-                                                <option value="{{ $kata->id }}" {{ in_array($kata->id, $antonimIds) ? 'selected' : '' }}>
-                                                    {{ $kata->kata }}
+                                        <select name="antonim[]" id="antonim" class="form-control" multiple>
+                                            @foreach($kataList as $item)
+                                                <option value="{{ $item->id }}" {{ in_array($item->id, $kata->antonims->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                                    {{ $item->kata }}
                                                 </option>
                                             @endforeach
                                         </select>
@@ -68,11 +52,16 @@
 
                                     <div class="form-group">
                                         <label for="imbuhan">Imbuhan</label>
-                                        <input type="text" class="form-control" id="imbuhan" name="imbuhan[]">
-                                    </div>
-
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                </form>
+                                        <div id="imbuhan">
+                                            @foreach($kata->imbuhans as $imbuhan)
+                                                <input type="text" name="imbuhan[]" value="{{ $imbuhan->imbuhan }}" class="form-control mb-2">
+                                            @endforeach
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-secondary" onclick="addImbuhan()">Tambah Imbuhan</button>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                    </form>
                             </div>
                         </div>
                     </div>
@@ -80,4 +69,13 @@
             </div>
         </section>
     </div>
+    @push('scripts')
+    <script>
+        function addImbuhan() {
+            var div = document.createElement('div');
+            div.innerHTML = '<input type="text" name="imbuhan[]" class="form-control mb-2">';
+            document.getElementById('imbuhan').appendChild(div);
+        }
+    </script>
+    @endpush
 @endsection

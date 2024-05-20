@@ -22,9 +22,11 @@ Route::controller(KataController::class)->group(function () {
             Route::post('/kategori/simpan', 'simpanKategori')->name('kategori.simpan');
             Route::get('/kategori/delete/{id}', 'deleteKategori')->name('kategori.delete');
 
-
+            Route::get('/kelas/view', 'viewKelas')->name('kelas.view');
+            Route::post('/kelas/simpan', 'simpanKelas')->name('kelas.simpan');
+            Route::get('/kelas/delete/{id}', 'deleteKelas')->name('kelas.delete');
         });
-
+        Route::get('kata/search-results', [KataController::class, 'searchResults'])->name('kata.searchResults');
         Route::get('/search', [KataController::class, 'search'])->name('kata.search');
         Route::get('/kata', [KataController::class, 'index'])->name('kata.index');
         Route::get('/kata/create', [KataController::class, 'create'])->name('kata.create');

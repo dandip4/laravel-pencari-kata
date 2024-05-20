@@ -15,10 +15,14 @@
         <li class="nav-item   {{ Request::is('kata*') ? 'active' : '' }}">
             <a href="{{ route('kata.index') }}" class="nav-link"><i class="fa-solid fa-file-pen"></i><span>Kata</span></a>
         </li>
-        <li class="menu-header">Kategori</li>
+        <li class="menu-header">Kata</li>
         <li class="nav-item   {{ Request::is('kategori*') ? 'active' : '' }}">
             <a href="{{ route('kategori.view') }}" class="nav-link"><i
-                    class="fas fa-list"></i><span>Kategori</span></a>
+                    class="fas fa-list"></i><span>Kata</span></a>
+        </li>
+        <li class="nav-item   {{ Request::is('kelas*') ? 'active' : '' }}">
+            <a href="{{ route('kelas.view') }}" class="nav-link"><i
+                    class="fas fa-list"></i><span>Kelas Kata</span></a>
         </li>
         <li class="menu-header">Cari Kata</li>
         <li class="nav-item   {{ Request::is('search*') ? 'active' : '' }}">
